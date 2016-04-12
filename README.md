@@ -3,7 +3,11 @@ React Daterange Picker
 
 A React based date range picker.
 
-[Demo](http://onefinestay.github.io/react-daterange-picker/)
+This fork adds the following features:
+
+* A tooltip above the current moused-over date while highlighting a date ragne.
+
+[Demo](http://coopermaruyama.github.io/react-daterange-picker/)
 
 ## Features
 
@@ -51,4 +55,4 @@ npm run develop
 This will start a local server at `http://localhost:9989` where you can see the
 example page. It will also watch for any files changes and rebuild.
 To update the compiled files in dist run `npm run build-dist-js`, and you can
-lint the code with `npm run lint`. 
+lint the code with `npm run lint`.

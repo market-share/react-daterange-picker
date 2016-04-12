@@ -107,7 +107,8 @@ var CalendarMonth = _react2['default'].createClass({
       isSelectedRangeStart: isSelectedRangeStart,
       isSelectedRangeEnd: isSelectedRangeEnd,
       isInSelectedRange: isInSelectedRange,
-      date: d
+      date: d,
+      daysDiff: highlightedRange && highlightedRange.end.diff(highlightedRange.start, 'days')
     }, props));
   },
 
