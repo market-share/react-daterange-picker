@@ -11,6 +11,8 @@ import CalendarDatePeriod from './CalendarDatePeriod';
 import CalendarHighlight from './CalendarHighlight';
 import CalendarSelection from './CalendarSelection';
 
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+
 
 const CalendarDate = React.createClass({
   mixins: [BemMixin, PureRenderMixin],
@@ -44,6 +46,7 @@ const CalendarDate = React.createClass({
   getInitialState() {
     return {
       mouseDown: false,
+      mouseOver: false
     };
   },
 
@@ -87,6 +90,9 @@ const CalendarDate = React.createClass({
 
   mouseEnter() {
     this.props.onHighlightDate(this.props.date);
+    this.setState({
+      mouseOver: true
+    });
   },
 
   mouseLeave() {
@@ -95,6 +101,7 @@ const CalendarDate = React.createClass({
 
       this.setState({
         mouseDown: false,
+        mouseOver: false
       });
     }
     this.props.onUnHighlightDate(this.props.date);
@@ -156,6 +163,8 @@ const CalendarDate = React.createClass({
     let numStates = states.count();
     let cellStyle = {};
     let style = {};
+    let numDays = null;
+    let tooltip;
 
     let highlightModifier;
     let selectionModifier;
@@ -202,6 +211,18 @@ const CalendarDate = React.createClass({
       }
     }
 
+    if ((this.props.isHighlightedRangeEnd || this.props.isHighlightedRangeStart) && this.state.mouseOver) {
+      numDays = this.props.daysDiff;
+    }
+
+    if (numDays) {
+      tooltip = <Tooltip className={this.cx({element: "Tooltip"}) + " in"} id={numDays}>{numDays} days</Tooltip>;
+    }
+
+    let dateLabel = <span className={this.cx({element: "DateLabel"})}>{date.format('D')}</span>;
+
+
+
     return (
       <td className={this.cx({element: 'Date', modifiers: bemModifiers, states: bemStates})}
         style={cellStyle}
@@ -216,7 +237,7 @@ const CalendarDate = React.createClass({
           </div>}
         {numStates === 1 &&
           <div className={this.cx({element: "FullDateStates"})} style={style} />}
-        <span className={this.cx({element: "DateLabel"})}>{date.format('D')}</span>
+        {numDays ? <OverlayTrigger placement="top" overlay={tooltip}>{dateLabel}</OverlayTrigger> : dateLabel}
         {selectionModifier ? <CalendarSelection modifier={selectionModifier} pending={pending} /> : null}
         {highlightModifier ? <CalendarHighlight modifier={highlightModifier} /> : null}
       </td>

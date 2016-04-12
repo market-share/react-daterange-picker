@@ -8,6 +8,7 @@ class Base extends React.Component {
         <head>
           <title>React Daterange Picker Demo</title>
           <link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/styles/docco.min.css' rel='stylesheet' type='text/css'></link>
+          <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css"></link>
           <link href="css/react-calendar.css" rel="stylesheet"></link>
           <link href="css/example.css" rel="stylesheet"></link>
           <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
