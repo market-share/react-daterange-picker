@@ -54,15 +54,15 @@ $ns: DateRangePicker;
     z-index: 1;
 
     &--previous {
-      left: 20px;
+      left: 40px;
     }
 
     &--next {
-      right: 20px;
+      right: 40px;
     }
 
     &:hover {
-      background-color: #ccc;
+      background-color: hsl(0,0%,90%);
     }
   }
 
@@ -81,13 +81,13 @@ $ns: DateRangePicker;
     &--previous {
       border-left: $arrow-size solid transparent;
       border-right: $arrow-size solid #333;
-      right: 30px / 2 - ($arrow-size / 2);
+      right: 35px / 2 - ($arrow-size / 2);
     }
 
     &--next {
       border-left: $arrow-size solid #333;
       border-right: $arrow-size solid transparent;
-      left: 30px / 2 - ($arrow-size / 2);
+      left: 35px / 2 - ($arrow-size / 2);
     }
   }
 
