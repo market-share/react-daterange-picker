@@ -54,15 +54,15 @@ $ns: DateRangePicker;
     z-index: 1;
 
     &--previous {
-      left: 20px;
+      left: 40px;
     }
 
     &--next {
-      right: 20px;
+      right: 40px;
     }
 
     &:hover {
-      background-color: #ccc;
+      background-color: hsl(0,0%,90%);
     }
   }
 
@@ -80,21 +80,21 @@ $ns: DateRangePicker;
 
     &--previous {
       border-left: $arrow-size solid transparent;
-      border-right: $arrow-size solid #aaa;
-      right: 30px / 2 - ($arrow-size / 2);
+      border-right: $arrow-size solid #333;
+      right: 35px / 2 - ($arrow-size / 2);
     }
 
     &--next {
-      border-left: $arrow-size solid #aaa;
+      border-left: $arrow-size solid #333;
       border-right: $arrow-size solid transparent;
-      left: 30px / 2 - ($arrow-size / 2);
+      left: 35px / 2 - ($arrow-size / 2);
     }
   }
 
   &__Month {
     color: #333;
     display: inline-block;
-    margin: 0 20px;
+    margin: 0 0px;
     position: relative;
     user-select: none;
     width: 275px;
@@ -108,6 +108,7 @@ $ns: DateRangePicker;
     line-height: 35px;
     position: relative;
     text-align: center;
+    background-color: #f0f0f0;
   }
 
   &__MonthHeaderLabel {
@@ -132,10 +133,15 @@ $ns: DateRangePicker;
 
   &__MonthDates {
     border-bottom: 1px solid #f4f5f6;
+    border-left: 1px solid #EBEBEB;
     border-collapse: separate;
     border-spacing: 0 1px;
     margin: 0;
     width: 100%;
+
+    &:first-child {
+      border-left: none;
+    }
   }
 
   &__WeekdayHeading,
@@ -211,8 +217,8 @@ $ns: DateRangePicker;
   }
 
   &__CalendarSelection {
-    background-color: #ed5434;
-    border: 1px solid darken(#ed5434, 5);
+    background-color: #00a950;
+    border: 1px solid darken(#00a950, 5);
     bottom: $selection-margin;
     left: 0;
     position: absolute;
@@ -249,7 +255,7 @@ $ns: DateRangePicker;
     }
 
     &--is-pending {
-      background-color: rgba(#ed5434, .75);
+      background-color: rgba(#00a950, .75);
       border-width: 0;
     }
   }
@@ -288,7 +294,7 @@ $ns: DateRangePicker;
 
     &--single {
       background-color: #fff;
-      border: 1px solid darken(#ed5434, 5);
+      border: 1px solid darken(#00a950, 5);
       border-radius: $selection-radius;
       left: $selection-margin;
       right: $selection-margin;
@@ -318,5 +324,10 @@ $ns: DateRangePicker;
     text-align: center;
     width: 100%;
     z-index: 1;
+  }
+
+  &__DateTooltip {
+    opacity: 1;
+    font-size: 10px;
   }
 }
