@@ -142,18 +142,20 @@ const Index = React.createClass({
 
         <div className="content">
           <div className="example">
-            <DatePickerRange
-              firstOfWeek={1}
-              numberOfCalendars={2}
-              selectionType='range'
-              minimumDate={new Date()}
-              maximumDate={moment().add(2, 'years').toDate()}
-              stateDefinitions={stateDefinitions}
-              dateStates={dateRanges}
-              defaultState="available"
-              value={moment.range(initialStart, initialEnd)}
-              showLegend={true}
-              />
+            <div style={{textAlign: 'center'}}>
+              <DatePickerRange
+                firstOfWeek={1}
+                numberOfCalendars={2}
+                selectionType='range'
+                minimumDate={new Date()}
+                maximumDate={moment().add(2, 'years').toDate()}
+                stateDefinitions={stateDefinitions}
+                dateStates={dateRanges}
+                defaultState="available"
+                value={moment.range(initialStart, initialEnd)}
+                showLegend={true}
+                />
+            </div>
             <CodeSnippet language="javascript">
               {processCodeSnippet(mainCodeSnippet)}
             </CodeSnippet>
