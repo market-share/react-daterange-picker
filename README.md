@@ -18,7 +18,7 @@ This fork adds the following features:
 
 ## React Version
 
-As of version 1.0.0, the react-daterange-picker component supports React 0.14
+As of version 1.0.0, the react-daterange-picker component supports React 0.14. At this time React 0.15 is not supported.
 
 If you wish to user an older version of React, please use react-daterange-picker v0.12.x or below.
 
@@ -47,7 +47,7 @@ If you have been added as a project contributor and wish to publish a new releas
 Once you have the repository cloned run the following commands to get started:
 
 ```shell
-npm install react react-dom
+npm install react@0.14 react-dom@0.14
 npm install
 npm run develop
 ```
