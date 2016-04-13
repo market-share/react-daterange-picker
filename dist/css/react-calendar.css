@@ -42,9 +42,9 @@
     width: 35px;
     z-index: 1; }
     .DateRangePicker__PaginationArrow--previous {
-      left: 40px; }
+      left: 0; }
     .DateRangePicker__PaginationArrow--next {
-      right: 40px; }
+      right: 0; }
     .DateRangePicker__PaginationArrow:hover {
       background-color: #e6e6e6; }
   .DateRangePicker__PaginationArrowIcon {

@@ -54,11 +54,11 @@ $ns: DateRangePicker;
     z-index: 1;
 
     &--previous {
-      left: 40px;
+      left: 0;
     }
 
     &--next {
-      right: 40px;
+      right: 0;
     }
 
     &:hover {
