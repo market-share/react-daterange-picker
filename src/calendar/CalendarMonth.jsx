@@ -64,7 +64,7 @@ const CalendarMonth = React.createClass({
         isSelectedRangeEnd={isSelectedRangeEnd}
         isInSelectedRange={isInSelectedRange}
         date={d}
-        daysDiff={highlightedRange && highlightedRange.end.diff(highlightedRange.start, 'days')}
+        daysDiff={highlightedRange && highlightedRange.end.diff(highlightedRange.start, 'days') + 1}
         {...props} />
     );
   },
