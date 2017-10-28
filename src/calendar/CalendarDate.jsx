@@ -172,12 +172,15 @@ const CalendarDate = React.createClass({
     if (isSelectedDate || (isSelectedRangeStart && isSelectedRangeEnd)
         || (isHighlightedRangeStart && isHighlightedRangeEnd)) {
       selectionModifier = 'single';
-    } else if (isSelectedRangeStart || isHighlightedRangeStart) {
-      selectionModifier = 'start';
-    } else if (isSelectedRangeEnd || isHighlightedRangeEnd) {
-      selectionModifier = 'end';
-    } else if (isInSelectedRange || isInHighlightedRange) {
-      selectionModifier = 'segment';
+    } else {
+      selectionModifier = isSelectedRangeStart ? 'start' :
+                            isSelectedRangeEnd ? 'end' :
+                              isInSelectedRange ? 'segment' :
+                                undefined;
+      highlightModifier = isHighlightedRangeStart ? 'start' :
+                            isHighlightedRangeEnd ? 'end' :
+                              isInHighlightedRange ? 'segment' :
+                                undefined;
     }
 
     if (isHighlightedDate) {
@@ -216,7 +219,7 @@ const CalendarDate = React.createClass({
     }
 
     if (numDays) {
-      tooltip = <Tooltip className={this.cx({element: "Tooltip"}) + " in"} id={numDays}>{numDays} days</Tooltip>;
+      tooltip = <Tooltip className={this.cx({element: "Tooltip"}) + " in"} id={numDays}>{numDays} days ( {numDays/7} weeks)</Tooltip>;
     }
 
     let dateLabel = <span className={this.cx({element: "DateLabel"})}>{date.format('D')}</span>;

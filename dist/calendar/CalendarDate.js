@@ -204,12 +204,9 @@ var CalendarDate = _react2['default'].createClass({
 
     if (isSelectedDate || isSelectedRangeStart && isSelectedRangeEnd || isHighlightedRangeStart && isHighlightedRangeEnd) {
       selectionModifier = 'single';
-    } else if (isSelectedRangeStart || isHighlightedRangeStart) {
-      selectionModifier = 'start';
-    } else if (isSelectedRangeEnd || isHighlightedRangeEnd) {
-      selectionModifier = 'end';
-    } else if (isInSelectedRange || isInHighlightedRange) {
-      selectionModifier = 'segment';
+    } else {
+      selectionModifier = isSelectedRangeStart ? 'start' : isSelectedRangeEnd ? 'end' : isInSelectedRange ? 'segment' : undefined;
+      highlightModifier = isHighlightedRangeStart ? 'start' : isHighlightedRangeEnd ? 'end' : isInHighlightedRange ? 'segment' : undefined;
     }
 
     if (isHighlightedDate) {
@@ -252,7 +249,9 @@ var CalendarDate = _react2['default'].createClass({
         _reactBootstrap.Tooltip,
         { className: this.cx({ element: "Tooltip" }) + " in", id: numDays },
         numDays,
-        ' days'
+        ' days ( ',
+        numDays / 7,
+        ' weeks)'
       );
     }
 

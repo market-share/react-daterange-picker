@@ -92,7 +92,9 @@ var DateRangePicker = _react2['default'].createClass({
     singleDateRange: _react2['default'].PropTypes.bool,
     showLegend: _react2['default'].PropTypes.bool,
     stateDefinitions: _react2['default'].PropTypes.object,
-    value: _utilsCustomPropTypes2['default'].momentOrMomentRange
+    value: _utilsCustomPropTypes2['default'].momentOrMomentRange,
+    fiscalWeekStartDay: _react2['default'].PropTypes.number,
+    granularity: _react2['default'].PropTypes.string
   },
 
   getDefaultProps: function getDefaultProps() {
@@ -324,25 +326,55 @@ var DateRangePicker = _react2['default'].createClass({
     }
   },
 
+  getFiscalWeek: function getFiscalWeek(date) {
+    var fiscalWeekStartDay = this.props.fiscalWeekStartDay;
+
+    var fiscalWeekStartDate = undefined,
+        fiscalWeekEndDate = undefined;
+
+    if (date.day() < fiscalWeekStartDay) {
+      fiscalWeekEndDate = (0, _moment2['default'])(date).add(fiscalWeekStartDay - date.day() - 1, 'days');
+      fiscalWeekStartDate = (0, _moment2['default'])(fiscalWeekEndDate).subtract(6, 'days');
+    } else {
+      fiscalWeekStartDate = (0, _moment2['default'])(date).subtract(date.day() - fiscalWeekStartDay, 'days');
+      fiscalWeekEndDate = (0, _moment2['default'])(fiscalWeekStartDate).add(6, 'days');
+    }
+    return _moment2['default'].range(fiscalWeekStartDate, fiscalWeekEndDate);
+  },
+
   onHighlightDate: function onHighlightDate(date) {
-    var selectionType = this.props.selectionType;
+    var _props2 = this.props;
+    var selectionType = _props2.selectionType;
+    var granularity = _props2.granularity;
     var selectedStartDate = this.state.selectedStartDate;
 
     var datePair = undefined;
     var range = undefined;
     var forwards = undefined;
+    var currentRange = undefined; // could be before or after start date since selecting backwards is supported
+    var selectedFiscalWeek = undefined;
 
     if (selectionType === 'range') {
       if (selectedStartDate) {
-        datePair = _immutable2['default'].List.of(selectedStartDate, date).sortBy(function (d) {
-          return d.unix();
-        });
+        if (granularity === 'week') {
+          currentRange = this.getFiscalWeek(date);
+          selectedFiscalWeek = this.getFiscalWeek(selectedStartDate);
+          datePair = selectedFiscalWeek.start.isBefore(currentRange.start) ? _immutable2['default'].List.of(selectedFiscalWeek.start, currentRange.end) : _immutable2['default'].List.of(currentRange.start, selectedFiscalWeek.end);
+        } else {
+          datePair = _immutable2['default'].List.of(selectedStartDate, date).sortBy(function (d) {
+            return d.unix();
+          });
+        }
         range = _moment2['default'].range(datePair.get(0), datePair.get(1));
         forwards = range.start.unix() === selectedStartDate.unix();
         range = this.sanitizeRange(range, forwards);
         this.highlightRange(range);
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
-        this.highlightDate(date);
+        if (granularity === 'week') {
+          this.highlightRange(this.getFiscalWeek(date));
+        } else {
+          this.highlightDate(date);
+        }
       }
     } else {
       if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
@@ -352,12 +384,15 @@ var DateRangePicker = _react2['default'].createClass({
   },
 
   startRangeSelection: function startRangeSelection(date) {
+    var startDate = undefined;
+
+    startDate = this.props.granularity === 'week' ? this.getFiscalWeek(date).start : date;
     this.setState({
       hideSelection: true,
-      selectedStartDate: date
+      selectedStartDate: startDate
     });
     if (typeof this.props.onSelectStart === 'function') {
-      this.props.onSelectStart((0, _moment2['default'])(date));
+      this.props.onSelectStart((0, _moment2['default'])(startDate));
     }
   },
 
@@ -484,13 +519,13 @@ var DateRangePicker = _react2['default'].createClass({
   },
 
   renderCalendar: function renderCalendar(index) {
-    var _props2 = this.props;
-    var bemBlock = _props2.bemBlock;
-    var bemNamespace = _props2.bemNamespace;
-    var firstOfWeek = _props2.firstOfWeek;
-    var numberOfCalendars = _props2.numberOfCalendars;
-    var selectionType = _props2.selectionType;
-    var value = _props2.value;
+    var _props3 = this.props;
+    var bemBlock = _props3.bemBlock;
+    var bemNamespace = _props3.bemNamespace;
+    var firstOfWeek = _props3.firstOfWeek;
+    var numberOfCalendars = _props3.numberOfCalendars;
+    var selectionType = _props3.selectionType;
+    var value = _props3.value;
     var _state2 = this.state;
     var dateStates = _state2.dateStates;
     var enabledRange = _state2.enabledRange;
@@ -558,13 +593,13 @@ var DateRangePicker = _react2['default'].createClass({
   },
 
   render: function render() {
-    var _props3 = this.props;
-    var PaginationArrowComponent = _props3.paginationArrowComponent;
-    var numberOfCalendars = _props3.numberOfCalendars;
-    var stateDefinitions = _props3.stateDefinitions;
-    var selectedLabel = _props3.selectedLabel;
-    var showLegend = _props3.showLegend;
-    var helpMessage = _props3.helpMessage;
+    var _props4 = this.props;
+    var PaginationArrowComponent = _props4.paginationArrowComponent;
+    var numberOfCalendars = _props4.numberOfCalendars;
+    var stateDefinitions = _props4.stateDefinitions;
+    var selectedLabel = _props4.selectedLabel;
+    var showLegend = _props4.showLegend;
+    var helpMessage = _props4.helpMessage;
 
     var calendars = _immutable2['default'].Range(0, numberOfCalendars).map(this.renderCalendar);
 
