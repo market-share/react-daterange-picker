@@ -459,6 +459,7 @@ const DateRangePicker = React.createClass({
       numberOfCalendars,
       selectionType,
       value,
+      granularity,
     } = this.props;
 
     let {
@@ -523,6 +524,7 @@ const DateRangePicker = React.createClass({
       onUnHighlightDate: this.onUnHighlightDate,
       dateRangesForDate: this.dateRangesForDate,
       dateComponent: CalendarDate,
+      granularity: granularity,
     };
 
     return <CalendarMonth {...props} />;

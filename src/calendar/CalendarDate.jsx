@@ -163,7 +163,7 @@ const CalendarDate = React.createClass({
     let numStates = states.count();
     let cellStyle = {};
     let style = {};
-    let numDays = null;
+    let numUnit = null;
     let tooltip;
 
     let highlightModifier;
@@ -214,12 +214,18 @@ const CalendarDate = React.createClass({
       }
     }
 
-    if ((this.props.isHighlightedRangeEnd || this.props.isHighlightedRangeStart) && this.state.mouseOver) {
-      numDays = this.props.daysDiff;
-    }
+    if (this.state.mouseOver) {
+      let unitStr;
 
-    if (numDays) {
-      tooltip = <Tooltip className={this.cx({element: "Tooltip"}) + " in"} id={numDays}>{numDays} days ( {numDays/7} weeks)</Tooltip>;
+      if (this.props.granularity === 'week') {
+        numUnit = Math.round(this.props.daysDiff/7);
+        unitStr = numUnit > 1 ? 'weeks' : 'week';
+      } else {
+        numUnit = this.props.daysDiff;
+        unitStr = numUnit > 1 ? 'days' : 'day';
+      }
+
+      tooltip = <Tooltip className={this.cx({element: "Tooltip"}) + " in"} id={numUnit}>{numUnit} {unitStr}</Tooltip>;
     }
 
     let dateLabel = <span className={this.cx({element: "DateLabel"})}>{date.format('D')}</span>;
@@ -240,7 +246,7 @@ const CalendarDate = React.createClass({
           </div>}
         {numStates === 1 &&
           <div className={this.cx({element: "FullDateStates"})} style={style} />}
-        {numDays ? <OverlayTrigger placement="top" overlay={tooltip}>{dateLabel}</OverlayTrigger> : dateLabel}
+        {numUnit ? <OverlayTrigger placement="top" overlay={tooltip} delay={0}>{dateLabel}</OverlayTrigger> : dateLabel}
         {selectionModifier ? <CalendarSelection modifier={selectionModifier} pending={pending} /> : null}
         {highlightModifier ? <CalendarHighlight modifier={highlightModifier} /> : null}
       </td>

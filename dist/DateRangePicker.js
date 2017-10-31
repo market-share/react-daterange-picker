@@ -526,6 +526,7 @@ var DateRangePicker = _react2['default'].createClass({
     var numberOfCalendars = _props3.numberOfCalendars;
     var selectionType = _props3.selectionType;
     var value = _props3.value;
+    var granularity = _props3.granularity;
     var _state2 = this.state;
     var dateStates = _state2.dateStates;
     var enabledRange = _state2.enabledRange;
@@ -586,7 +587,8 @@ var DateRangePicker = _react2['default'].createClass({
       onHighlightDate: this.onHighlightDate,
       onUnHighlightDate: this.onUnHighlightDate,
       dateRangesForDate: this.dateRangesForDate,
-      dateComponent: _calendarCalendarDate2['default']
+      dateComponent: _calendarCalendarDate2['default'],
+      granularity: granularity
     };
 
     return _react2['default'].createElement(_calendarCalendarMonth2['default'], props);

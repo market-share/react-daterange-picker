@@ -196,7 +196,7 @@ var CalendarDate = _react2['default'].createClass({
     var numStates = states.count();
     var cellStyle = {};
     var style = {};
-    var numDays = null;
+    var numUnit = null;
     var tooltip = undefined;
 
     var highlightModifier = undefined;
@@ -240,18 +240,23 @@ var CalendarDate = _react2['default'].createClass({
       }
     }
 
-    if ((this.props.isHighlightedRangeEnd || this.props.isHighlightedRangeStart) && this.state.mouseOver) {
-      numDays = this.props.daysDiff;
-    }
+    if (this.state.mouseOver) {
+      var unitStr = undefined;
 
-    if (numDays) {
+      if (this.props.granularity === 'week') {
+        numUnit = Math.round(this.props.daysDiff / 7);
+        unitStr = numUnit > 1 ? 'weeks' : 'week';
+      } else {
+        numUnit = this.props.daysDiff;
+        unitStr = numUnit > 1 ? 'days' : 'day';
+      }
+
       tooltip = _react2['default'].createElement(
         _reactBootstrap.Tooltip,
-        { className: this.cx({ element: "Tooltip" }) + " in", id: numDays },
-        numDays,
-        ' days ( ',
-        numDays / 7,
-        ' weeks)'
+        { className: this.cx({ element: "Tooltip" }) + " in", id: numUnit },
+        numUnit,
+        ' ',
+        unitStr
       );
     }
 
@@ -276,9 +281,9 @@ var CalendarDate = _react2['default'].createClass({
         _react2['default'].createElement(_CalendarDatePeriod2['default'], { period: 'pm', color: pmColor })
       ),
       numStates === 1 && _react2['default'].createElement('div', { className: this.cx({ element: "FullDateStates" }), style: style }),
-      numDays ? _react2['default'].createElement(
+      numUnit ? _react2['default'].createElement(
         _reactBootstrap.OverlayTrigger,
-        { placement: 'top', overlay: tooltip },
+        { placement: 'top', overlay: tooltip, delay: 0 },
         dateLabel
       ) : dateLabel,
       selectionModifier ? _react2['default'].createElement(_CalendarSelection2['default'], { modifier: selectionModifier, pending: pending }) : null,
