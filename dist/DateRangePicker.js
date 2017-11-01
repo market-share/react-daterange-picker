@@ -93,7 +93,7 @@ var DateRangePicker = _react2['default'].createClass({
     showLegend: _react2['default'].PropTypes.bool,
     stateDefinitions: _react2['default'].PropTypes.object,
     value: _utilsCustomPropTypes2['default'].momentOrMomentRange,
-    fiscalWeekStartDay: _react2['default'].PropTypes.number,
+    getFiscalWeek: _react2['default'].PropTypes.func,
     granularity: _react2['default'].PropTypes.string
   },
 
@@ -326,22 +326,6 @@ var DateRangePicker = _react2['default'].createClass({
     }
   },
 
-  getFiscalWeek: function getFiscalWeek(date) {
-    var fiscalWeekStartDay = this.props.fiscalWeekStartDay;
-
-    var fiscalWeekStartDate = undefined,
-        fiscalWeekEndDate = undefined;
-
-    if (date.day() < fiscalWeekStartDay) {
-      fiscalWeekEndDate = (0, _moment2['default'])(date).add(fiscalWeekStartDay - date.day() - 1, 'days');
-      fiscalWeekStartDate = (0, _moment2['default'])(fiscalWeekEndDate).subtract(6, 'days');
-    } else {
-      fiscalWeekStartDate = (0, _moment2['default'])(date).subtract(date.day() - fiscalWeekStartDay, 'days');
-      fiscalWeekEndDate = (0, _moment2['default'])(fiscalWeekStartDate).add(6, 'days');
-    }
-    return _moment2['default'].range(fiscalWeekStartDate, fiscalWeekEndDate);
-  },
-
   onHighlightDate: function onHighlightDate(date) {
     var _props2 = this.props;
     var selectionType = _props2.selectionType;
@@ -357,8 +341,8 @@ var DateRangePicker = _react2['default'].createClass({
     if (selectionType === 'range') {
       if (selectedStartDate) {
         if (granularity === 'week') {
-          currentRange = this.getFiscalWeek(date);
-          selectedFiscalWeek = this.getFiscalWeek(selectedStartDate);
+          currentRange = this.props.getFiscalWeek(date);
+          selectedFiscalWeek = this.props.getFiscalWeek(selectedStartDate);
           datePair = selectedFiscalWeek.start.isBefore(currentRange.start) ? _immutable2['default'].List.of(selectedFiscalWeek.start, currentRange.end) : _immutable2['default'].List.of(currentRange.start, selectedFiscalWeek.end);
         } else {
           datePair = _immutable2['default'].List.of(selectedStartDate, date).sortBy(function (d) {
@@ -371,7 +355,7 @@ var DateRangePicker = _react2['default'].createClass({
         this.highlightRange(range);
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
         if (granularity === 'week') {
-          this.highlightRange(this.getFiscalWeek(date));
+          this.highlightRange(this.props.getFiscalWeek(date));
         } else {
           this.highlightDate(date);
         }
@@ -386,7 +370,7 @@ var DateRangePicker = _react2['default'].createClass({
   startRangeSelection: function startRangeSelection(date) {
     var startDate = undefined;
 
-    startDate = this.props.granularity === 'week' ? this.getFiscalWeek(date).start : date;
+    startDate = this.props.granularity === 'week' ? this.props.getFiscalWeek(date).start : date;
     this.setState({
       hideSelection: true,
       selectedStartDate: startDate
