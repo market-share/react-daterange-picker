@@ -92,11 +92,12 @@ var DateRangePicker = _react2['default'].createClass({
     singleDateRange: _react2['default'].PropTypes.bool,
     showLegend: _react2['default'].PropTypes.bool,
     stateDefinitions: _react2['default'].PropTypes.object,
-    value: _utilsCustomPropTypes2['default'].momentOrMomentRange,
+    value: _utilsCustomPropTypes2['default'].momentOrMomentRange, // Applied or unapplied time range
     getFiscalWeek: _react2['default'].PropTypes.func,
-    granularity: _react2['default'].PropTypes.string
-  },
+    granularity: _react2['default'].PropTypes.string, // if 'week' then clicking any date in the week, this week will be selected
+    shouldInit: _react2['default'].PropTypes.bool },
 
+  // recover the calendar to be the range 'value' indicate
   getDefaultProps: function getDefaultProps() {
     var date = new Date();
     var initialDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -137,6 +138,15 @@ var DateRangePicker = _react2['default'].createClass({
       dateStates: this.state.dateStates && _immutable2['default'].is(this.state.dateStates, nextDateStates) ? this.state.dateStates : nextDateStates,
       enabledRange: this.state.enabledRange && this.state.enabledRange.isSame(nextEnabledRange) ? this.state.enabledRange : nextEnabledRange
     });
+
+    if (this.props.shouldInit) {
+      this.setState({
+        selectedStartDate: null,
+        highlightedRange: null,
+        highlightedDate: null,
+        hideSelection: false
+      });
+    }
   },
 
   getInitialState: function getInitialState() {

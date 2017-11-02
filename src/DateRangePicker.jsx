@@ -52,9 +52,10 @@ const DateRangePicker = React.createClass({
     singleDateRange: React.PropTypes.bool,
     showLegend: React.PropTypes.bool,
     stateDefinitions: React.PropTypes.object,
-    value: CustomPropTypes.momentOrMomentRange,
+    value: CustomPropTypes.momentOrMomentRange, // Applied or unapplied time range
     getFiscalWeek: React.PropTypes.func,
-    granularity: React.PropTypes.string
+    granularity: React.PropTypes.string, // if 'week' then clicking any date in the week, this week will be selected
+    shouldInit: React.PropTypes.bool, // recover the calendar to be the range 'value' indicate
   },
 
   getDefaultProps() {
@@ -97,6 +98,15 @@ const DateRangePicker = React.createClass({
       dateStates: this.state.dateStates && Immutable.is(this.state.dateStates, nextDateStates) ? this.state.dateStates : nextDateStates,
       enabledRange: this.state.enabledRange && this.state.enabledRange.isSame(nextEnabledRange) ? this.state.enabledRange : nextEnabledRange,
     });
+
+    if (this.props.shouldInit) {
+      this.setState({
+        selectedStartDate: null,
+        highlightedRange: null,
+        highlightedDate: null,
+        hideSelection: false,
+      });
+    }
   },
 
   getInitialState() {
