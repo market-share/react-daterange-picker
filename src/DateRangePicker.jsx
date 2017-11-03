@@ -272,7 +272,7 @@ const DateRangePicker = React.createClass({
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
         this.startRangeSelection(date);
         if (this.props.singleDateRange) {
-          this.highlightRange(moment.range(date, date));
+          this.highlightRange(moment.range(date, date.endOf('day')));
         }
       }
 
@@ -304,7 +304,7 @@ const DateRangePicker = React.createClass({
         } else {
           datePair = Immutable.List.of(selectedStartDate, date).sortBy(d => d.unix());
         }
-        range = moment.range(datePair.get(0), datePair.get(1));
+        range = moment.range(datePair.get(0), datePair.get(1).endOf('day'));
         forwards = (range.start.unix() === selectedStartDate.unix());
         range = this.sanitizeRange(range, forwards);
         this.highlightRange(range);

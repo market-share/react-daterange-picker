@@ -326,7 +326,7 @@ var DateRangePicker = _react2['default'].createClass({
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
         this.startRangeSelection(date);
         if (this.props.singleDateRange) {
-          this.highlightRange(_moment2['default'].range(date, date));
+          this.highlightRange(_moment2['default'].range(date, date.endOf('day')));
         }
       }
     } else {
@@ -359,7 +359,7 @@ var DateRangePicker = _react2['default'].createClass({
             return d.unix();
           });
         }
-        range = _moment2['default'].range(datePair.get(0), datePair.get(1));
+        range = _moment2['default'].range(datePair.get(0), datePair.get(1).endOf('day'));
         forwards = range.start.unix() === selectedStartDate.unix();
         range = this.sanitizeRange(range, forwards);
         this.highlightRange(range);
