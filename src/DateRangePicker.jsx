@@ -52,7 +52,10 @@ const DateRangePicker = React.createClass({
     singleDateRange: React.PropTypes.bool,
     showLegend: React.PropTypes.bool,
     stateDefinitions: React.PropTypes.object,
-    value: CustomPropTypes.momentOrMomentRange,
+    value: CustomPropTypes.momentOrMomentRange, // Applied or unapplied time range
+    getFiscalWeek: React.PropTypes.func,
+    granularity: React.PropTypes.string, // if 'week' then clicking any date in the week, this week will be selected
+    shouldInit: React.PropTypes.bool, // recover the calendar to be the range 'value' indicate
   },
 
   getDefaultProps() {
@@ -95,6 +98,15 @@ const DateRangePicker = React.createClass({
       dateStates: this.state.dateStates && Immutable.is(this.state.dateStates, nextDateStates) ? this.state.dateStates : nextDateStates,
       enabledRange: this.state.enabledRange && this.state.enabledRange.isSame(nextEnabledRange) ? this.state.enabledRange : nextEnabledRange,
     });
+
+    if (this.props.shouldInit) {
+      this.setState({
+        selectedStartDate: null,
+        highlightedRange: null,
+        highlightedDate: null,
+        hideSelection: false,
+      });
+    }
   },
 
   getInitialState() {
@@ -260,7 +272,7 @@ const DateRangePicker = React.createClass({
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
         this.startRangeSelection(date);
         if (this.props.singleDateRange) {
-          this.highlightRange(moment.range(date, date));
+          this.highlightRange(moment.range(date, date.endOf('day')));
         }
       }
 
@@ -272,22 +284,36 @@ const DateRangePicker = React.createClass({
   },
 
   onHighlightDate(date) {
-    let {selectionType} = this.props;
+    let {selectionType, granularity} = this.props;
     let {selectedStartDate} = this.state;
 
     let datePair;
     let range;
     let forwards;
+    let currentRange; // could be before or after start date since selecting backwards is supported
+    let selectedFiscalWeek;
 
     if (selectionType === 'range') {
       if (selectedStartDate) {
-        datePair = Immutable.List.of(selectedStartDate, date).sortBy(d => d.unix());
-        range = moment.range(datePair.get(0), datePair.get(1));
+        if (granularity === 'week') {
+          currentRange = this.props.getFiscalWeek(date);
+          selectedFiscalWeek = this.props.getFiscalWeek(selectedStartDate);
+          datePair = selectedFiscalWeek.start.isBefore(currentRange.start) ?
+              Immutable.List.of( selectedFiscalWeek.start, currentRange.end) :
+              Immutable.List.of( currentRange.start, selectedFiscalWeek.end);
+        } else {
+          datePair = Immutable.List.of(selectedStartDate, date).sortBy(d => d.unix());
+        }
+        range = moment.range(datePair.get(0), datePair.get(1).endOf('day'));
         forwards = (range.start.unix() === selectedStartDate.unix());
         range = this.sanitizeRange(range, forwards);
         this.highlightRange(range);
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
-        this.highlightDate(date);
+        if (granularity === 'week') {
+          this.highlightRange(this.props.getFiscalWeek(date));
+        } else {
+          this.highlightDate(date);
+        }
       }
     } else {
       if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
@@ -297,12 +323,15 @@ const DateRangePicker = React.createClass({
   },
 
   startRangeSelection(date) {
+    let startDate;
+
+    startDate = this.props.granularity === 'week' ? this.props.getFiscalWeek(date).start : date;
     this.setState({
       hideSelection: true,
-      selectedStartDate: date,
+      selectedStartDate: startDate,
     });
     if (typeof this.props.onSelectStart === 'function') {
-      this.props.onSelectStart(moment(date));
+      this.props.onSelectStart(moment(startDate));
     }
   },
 
@@ -426,6 +455,7 @@ const DateRangePicker = React.createClass({
       numberOfCalendars,
       selectionType,
       value,
+      granularity,
     } = this.props;
 
     let {
@@ -490,6 +520,7 @@ const DateRangePicker = React.createClass({
       onUnHighlightDate: this.onUnHighlightDate,
       dateRangesForDate: this.dateRangesForDate,
       dateComponent: CalendarDate,
+      granularity: granularity,
     };
 
     return <CalendarMonth {...props} />;

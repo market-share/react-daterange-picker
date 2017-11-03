@@ -92,9 +92,12 @@ var DateRangePicker = _react2['default'].createClass({
     singleDateRange: _react2['default'].PropTypes.bool,
     showLegend: _react2['default'].PropTypes.bool,
     stateDefinitions: _react2['default'].PropTypes.object,
-    value: _utilsCustomPropTypes2['default'].momentOrMomentRange
-  },
+    value: _utilsCustomPropTypes2['default'].momentOrMomentRange, // Applied or unapplied time range
+    getFiscalWeek: _react2['default'].PropTypes.func,
+    granularity: _react2['default'].PropTypes.string, // if 'week' then clicking any date in the week, this week will be selected
+    shouldInit: _react2['default'].PropTypes.bool },
 
+  // recover the calendar to be the range 'value' indicate
   getDefaultProps: function getDefaultProps() {
     var date = new Date();
     var initialDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -135,6 +138,15 @@ var DateRangePicker = _react2['default'].createClass({
       dateStates: this.state.dateStates && _immutable2['default'].is(this.state.dateStates, nextDateStates) ? this.state.dateStates : nextDateStates,
       enabledRange: this.state.enabledRange && this.state.enabledRange.isSame(nextEnabledRange) ? this.state.enabledRange : nextEnabledRange
     });
+
+    if (this.props.shouldInit) {
+      this.setState({
+        selectedStartDate: null,
+        highlightedRange: null,
+        highlightedDate: null,
+        hideSelection: false
+      });
+    }
   },
 
   getInitialState: function getInitialState() {
@@ -314,7 +326,7 @@ var DateRangePicker = _react2['default'].createClass({
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
         this.startRangeSelection(date);
         if (this.props.singleDateRange) {
-          this.highlightRange(_moment2['default'].range(date, date));
+          this.highlightRange(_moment2['default'].range(date, date.endOf('day')));
         }
       }
     } else {
@@ -325,24 +337,38 @@ var DateRangePicker = _react2['default'].createClass({
   },
 
   onHighlightDate: function onHighlightDate(date) {
-    var selectionType = this.props.selectionType;
+    var _props2 = this.props;
+    var selectionType = _props2.selectionType;
+    var granularity = _props2.granularity;
     var selectedStartDate = this.state.selectedStartDate;
 
     var datePair = undefined;
     var range = undefined;
     var forwards = undefined;
+    var currentRange = undefined; // could be before or after start date since selecting backwards is supported
+    var selectedFiscalWeek = undefined;
 
     if (selectionType === 'range') {
       if (selectedStartDate) {
-        datePair = _immutable2['default'].List.of(selectedStartDate, date).sortBy(function (d) {
-          return d.unix();
-        });
-        range = _moment2['default'].range(datePair.get(0), datePair.get(1));
+        if (granularity === 'week') {
+          currentRange = this.props.getFiscalWeek(date);
+          selectedFiscalWeek = this.props.getFiscalWeek(selectedStartDate);
+          datePair = selectedFiscalWeek.start.isBefore(currentRange.start) ? _immutable2['default'].List.of(selectedFiscalWeek.start, currentRange.end) : _immutable2['default'].List.of(currentRange.start, selectedFiscalWeek.end);
+        } else {
+          datePair = _immutable2['default'].List.of(selectedStartDate, date).sortBy(function (d) {
+            return d.unix();
+          });
+        }
+        range = _moment2['default'].range(datePair.get(0), datePair.get(1).endOf('day'));
         forwards = range.start.unix() === selectedStartDate.unix();
         range = this.sanitizeRange(range, forwards);
         this.highlightRange(range);
       } else if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
-        this.highlightDate(date);
+        if (granularity === 'week') {
+          this.highlightRange(this.props.getFiscalWeek(date));
+        } else {
+          this.highlightDate(date);
+        }
       }
     } else {
       if (!this.isDateDisabled(date) && this.isDateSelectable(date)) {
@@ -352,12 +378,15 @@ var DateRangePicker = _react2['default'].createClass({
   },
 
   startRangeSelection: function startRangeSelection(date) {
+    var startDate = undefined;
+
+    startDate = this.props.granularity === 'week' ? this.props.getFiscalWeek(date).start : date;
     this.setState({
       hideSelection: true,
-      selectedStartDate: date
+      selectedStartDate: startDate
     });
     if (typeof this.props.onSelectStart === 'function') {
-      this.props.onSelectStart((0, _moment2['default'])(date));
+      this.props.onSelectStart((0, _moment2['default'])(startDate));
     }
   },
 
@@ -484,13 +513,14 @@ var DateRangePicker = _react2['default'].createClass({
   },
 
   renderCalendar: function renderCalendar(index) {
-    var _props2 = this.props;
-    var bemBlock = _props2.bemBlock;
-    var bemNamespace = _props2.bemNamespace;
-    var firstOfWeek = _props2.firstOfWeek;
-    var numberOfCalendars = _props2.numberOfCalendars;
-    var selectionType = _props2.selectionType;
-    var value = _props2.value;
+    var _props3 = this.props;
+    var bemBlock = _props3.bemBlock;
+    var bemNamespace = _props3.bemNamespace;
+    var firstOfWeek = _props3.firstOfWeek;
+    var numberOfCalendars = _props3.numberOfCalendars;
+    var selectionType = _props3.selectionType;
+    var value = _props3.value;
+    var granularity = _props3.granularity;
     var _state2 = this.state;
     var dateStates = _state2.dateStates;
     var enabledRange = _state2.enabledRange;
@@ -551,20 +581,21 @@ var DateRangePicker = _react2['default'].createClass({
       onHighlightDate: this.onHighlightDate,
       onUnHighlightDate: this.onUnHighlightDate,
       dateRangesForDate: this.dateRangesForDate,
-      dateComponent: _calendarCalendarDate2['default']
+      dateComponent: _calendarCalendarDate2['default'],
+      granularity: granularity
     };
 
     return _react2['default'].createElement(_calendarCalendarMonth2['default'], props);
   },
 
   render: function render() {
-    var _props3 = this.props;
-    var PaginationArrowComponent = _props3.paginationArrowComponent;
-    var numberOfCalendars = _props3.numberOfCalendars;
-    var stateDefinitions = _props3.stateDefinitions;
-    var selectedLabel = _props3.selectedLabel;
-    var showLegend = _props3.showLegend;
-    var helpMessage = _props3.helpMessage;
+    var _props4 = this.props;
+    var PaginationArrowComponent = _props4.paginationArrowComponent;
+    var numberOfCalendars = _props4.numberOfCalendars;
+    var stateDefinitions = _props4.stateDefinitions;
+    var selectedLabel = _props4.selectedLabel;
+    var showLegend = _props4.showLegend;
+    var helpMessage = _props4.helpMessage;
 
     var calendars = _immutable2['default'].Range(0, numberOfCalendars).map(this.renderCalendar);
 
