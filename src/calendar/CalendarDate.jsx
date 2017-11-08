@@ -163,7 +163,7 @@ const CalendarDate = React.createClass({
     let numStates = states.count();
     let cellStyle = {};
     let style = {};
-    let numUnit = null;
+    let numUnit;
     let tooltip;
 
     let highlightModifier;
@@ -214,7 +214,7 @@ const CalendarDate = React.createClass({
       }
     }
 
-    if (this.state.mouseOver) {
+    if (this.props.hideSelection && this.state.mouseOver) { //
       let unitStr;
 
       if (this.props.granularity === 'week') {

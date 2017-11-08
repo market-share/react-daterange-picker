@@ -196,7 +196,7 @@ var CalendarDate = _react2['default'].createClass({
     var numStates = states.count();
     var cellStyle = {};
     var style = {};
-    var numUnit = null;
+    var numUnit = undefined;
     var tooltip = undefined;
 
     var highlightModifier = undefined;
@@ -240,7 +240,8 @@ var CalendarDate = _react2['default'].createClass({
       }
     }
 
-    if (this.state.mouseOver) {
+    if (this.props.hideSelection && this.state.mouseOver) {
+      //
       var unitStr = undefined;
 
       if (this.props.granularity === 'week') {
