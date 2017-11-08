@@ -100,12 +100,7 @@ const DateRangePicker = React.createClass({
     });
 
     if (this.props.shouldInit) {
-      this.setState({
-        selectedStartDate: null,
-        highlightedRange: null,
-        highlightedDate: null,
-        hideSelection: false,
-      });
+      this.setState(this.getInitialState());
     }
   },
 
@@ -136,7 +131,7 @@ const DateRangePicker = React.createClass({
       selectedStartDate: null,
       highlightStartDate: null,
       highlightedDate: null,
-      highlightRange: null,
+      highlightedRange: null,
       hideSelection: false,
       enabledRange: this.getEnabledRange(this.props),
       dateStates: this.getDateStates(this.props),
